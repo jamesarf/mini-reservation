@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Reservation | Book Your Slot</title>
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="description" content="Book appointments easily with our simple, responsive reservation page." />
+</head>
+
+<body>
+<!-- ====== HEADER ====== -->
+<header class="site-header">
+  <div class="container header-inner">
+    <!-- Logo -->
+    <a href="#" class="logo" aria-label="Mini Reservation Home">Mini<span>Reservation</span></a>
+
+    <!-- Hamburger Button -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu" aria-expanded="false">
+      ☰
+    </button>
+
+    <!-- Navigation Links -->
+    <nav aria-label="Primary" class="nav" id="mainNav">
+      <ul class="nav-list">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#slotSettings">Settings</a></li>
+      </ul>
+    </nav>
+
+    <!-- Book Now button (hidden on mobile) -->
+    <button class="btn btn-primary" id="openModalBtn" aria-haspopup="dialog" aria-controls="bookingModal">
+      Book Now
+    </button>
+  </div>
+</header>
+
+
+<!-- ====== HERO SECTION ====== -->
+<section class="hero" id="home">
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <h1 class="hero-title">Reserve your spot in seconds</h1>
+      <p class="hero-subtitle">
+        A clean, simple page to pick a date and time — friendly on desktop, tablet, and mobile.
+      </p>
+      <div class="hero-cta">
+        <button class="btn btn-primary btn-lg" id="openModalBtnHero">Book Now</button>
+        <a class="btn btn-outline" href="#how">Learn more</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="mock-card">
+        <div class="mock-header">Available Slots</div>
+
+        <!-- Updated Date Buttons -->
+        <div class="mock-tabs" id="dateTabs"></div>
+
+        <!-- New date picker -->
+        <div class="custom-date-check">
+          <!-- <label for="customDate">Select a date:</label> -->
+          <input type="date" id="customDate" />
+          <button id="checkDateBtn" class="btn btn-sm">Show Slots</button>
+        </div>
+
+        <div class="mock-slots" id="slotContainer"></div>
+        <button class="btn btn-primary btn-sm" id="bookNowBtn" disabled>Book Now</button>
+        <p class="mock-info">All times are in Japan Standard Time (JST)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== ADMIN SLOT SETTINGS ====== -->
+<main class="section" id="slotSettings">
+  <div class="container">
+    <h1 class="page-title">Admin Slot Settings</h1>
+    <p class="text-muted page-desc">
+      Configure booking date ranges and weekly slot schedules. These settings will repeat weekly and are saved locally.
+    </p>
+
+    <div class="admin-wrapper">
+      <!-- ====== BOOKED SLOTS SECTION ====== -->
+      <section class="section alt" id="bookedSlotsSection">
+        <div class="container">
+          <h2>Booked Slots</h2>
+          <p class="text-muted">All confirmed bookings stored locally on your browser.</p>
+
+          <div id="bookedSlotsContainer" class="booked-slots-grid">
+            <!-- Filled by JS -->
+          </div>
+
+          <button id="clearBookingsBtn" class="btn btn-outline btn-sm">🗑 Clear All Bookings</button>
+        </div>
+      </section>
+
+      <!-- ================= RANGE SETTINGS ================= -->
+      <section class="settings-section">
+        <h2 class="section-title">Booking Range Configuration</h2>
+        <p class="section-desc">Choose between a fixed date range or a limited number of days from a start date.</p>
+
+        <form id="slotSettingsForm" class="settings-form">
+          <!-- Fixed Date Range -->
+          <div class="radio-row">
+            <div class="radio-left">
+              <input type="radio" name="rangeType" value="fixed" id="fixedOption" checked />
+              <label for="fixedOption" class="radio-label">Fixed Date Range</label>
+            </div>
+
+            <div class="radio-right">
+              
+              <div class="form-row">
+                <label class="inline"><input type="checkbox" id="fixedUseToday" /> Use today as start date</label>
+              </div>
+              <div class="form-row">
+                <label>Start Date</label>
+                <input type="date" id="fixedStartDate" />
+              </div>
+              <div class="form-row">
+                <label>End Date (optional)</label>
+                <input type="date" id="fixedEndDate" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Limited Days -->
+          <div class="radio-row">
+            <div class="radio-left">
+              <input type="radio" name="rangeType" value="limit" id="limitOption" />
+              <label for="limitOption" class="radio-label">Limited Number of Days</label>
+            </div>
+
+            <div class="radio-right">
+              
+              <div class="form-row">
+                <label class="inline"><input type="checkbox" id="limitUseToday" /> Use today as start date</label>
+              </div>
+              <div class="form-row">
+                <label>Start Date</label>
+                <input type="date" id="limitStartDate" />
+              </div>
+              <div class="form-row">
+                <label>Number of Days</label>
+                <input type="number" id="limitDays" min="1" value="30" />
+              </div>
+            </div>
+          </div>
+        </form>
+      
+        <h2 class="section-title">Weekly Slot Configuration</h2>
+        <p class="section-desc">Define working hours and slot durations for each weekday. Leave blank for closed days.</p>
+
+        <div class="weekdays-grid">
+          <div class="day-setting" data-day="Monday">
+            <h4>Monday</h4>
+            <label>Time Ranges</label>
+            <input type="text" value="9-12,13-17" />
+            <label>Slot Duration (min)</label>
+            <input type="number" value="30" />
+          </div>
+          <div class="day-setting" data-day="Tuesday">
+            <h4>Tuesday</h4>
+            <label>Time Ranges</label>
+            <input type="text" value="9-12,13-17" />
+            <label>Slot Duration (min)</label>
+            <input type="number" value="30" />
+          </div>
+          <div class="day-setting" data-day="Wednesday">
+            <h4>Wednesday</h4>
+            <label>Time Ranges</label>
+            <input type="text" value="9-12,13-17" />
+            <label>Slot Duration (min)</label>
+            <input type="number" value="30" />
+          </div>
+          <div class="day-setting" data-day="Thursday">
+            <h4>Thursday</h4>
+            <label>Time Ranges</label>
+            <input type="text" value="9-12,13-17" />
+            <label>Slot Duration (min)</label>
+            <input type="number" value="30" />
+          </div>
+          <div class="day-setting" data-day="Friday">
+            <h4>Friday</h4>
+            <label>Time Ranges</label>
+            <input type="text" value="9-12,13-17" />
+            <label>Slot Duration (min)</label>
+            <input type="number" value="30" />
+          </div>
+          <div class="day-setting" data-day="Saturday">
+            <h4>Saturday</h4>
+            <label>Time Ranges</label>
+            <input type="text" value="9-12,13-17" />
+            <label>Slot Duration (min)</label>
+            <input type="number" value="30" />
+          </div>
+          <div class="day-setting" data-day="Sunday">
+            <h4>Sunday</h4>
+            <label>Time Ranges</label>
+            <input type="text" value="9-13" />
+            <label>Slot Duration (min)</label>
+            <input type="number" value="30" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+          <a href="index.html" class="btn btn-outline">← Back to Booking Page</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- ====== FEATURES ====== -->
+<!-- ====== MAIN INFO SECTIONS ====== -->
+<main class="section" id="infoSections">
+  <div class="container">
+
+    <!-- FEATURES -->
+    <section class="info-section">
+      <h2 class="section-title">Key Features</h2>
+      <p class="section-desc">
+        Our reservation system is designed to make booking fast, reliable, and accessible — for both users and administrators.
+      </p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>Fast</h3>
+          <p>Pick a date and time instantly using our simplified 3-button navigation and slot preview.</p>
+        </div>
+        <div class="info-card">
+          <h3>Responsive</h3>
+          <p>Optimized for all devices — desktop, tablet, and mobile — using modern CSS Grid + Flex layouts.</p>
+        </div>
+        <div class="info-card">
+          <h3>Accessible</h3>
+          <p>Fully keyboard-friendly with ARIA-labeled modal dialogs and focus trapping for smooth navigation.</p>
+        </div>
+        <div class="info-card">
+          <h3>Configurable</h3>
+          <p>Admins can easily define booking ranges, slot durations, and working days directly from the settings panel.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="info-section" id="how">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-desc">
+        You can make a reservation in two simple ways — either directly from the
+        <strong>Available Slots card</strong> or through the <strong>Book Now</strong> form.
+      </p>
+
+      <div class="method-box alt">
+        <h3 class="method-title">Method 1 — Quick Booking from Available Slots</h3>
+        <ol class="steps-list">
+          <li><strong>1.</strong> Browse the <b>Available Slots</b> card on the homepage.</li>
+          <li><strong>2.</strong> Use the <b>Prev</b> and <b>Next</b> buttons to navigate dates within the booking range.</li>
+          <li><strong>3.</strong> Click on a <b>time slot</b> to select it — the slot will highlight in blue.</li>
+          <li><strong>4.</strong> Click <b>Book Now</b> (below the card) to open the modal.</li>
+          <li><strong>5.</strong> Your selected <b>date</b> and <b>time</b> will auto-fill — just enter your <b>name</b> and <b>email</b>, then confirm.</li>
+          <li><strong>6.</strong> The booked slot is removed instantly from availability.</li>
+        </ol>
+      </div>
+
+      <div class="method-box alt">
+        <h3 class="method-title">Method 2 — Booking via Form</h3>
+        <ol class="steps-list">
+          <li><strong>1.</strong> Click <b>Book Now</b> from the main header or hero section.</li>
+          <li><strong>2.</strong> In the modal form, select your <b>preferred date</b> and <b>time</b> manually.</li>
+          <li><strong>3.</strong> Enter your <b>name</b> and <b>email</b>.</li>
+          <li><strong>4.</strong> Click <b>Confirm Booking</b> to finalize your reservation.</li>
+          <li><strong>5.</strong> The booked slot is saved locally, and you’ll see a confirmation message.</li>
+        </ol>
+      </div>
+
+      <p class="note">
+        <strong>Admins:</strong> You can adjust weekly working hours, slot durations, and date ranges directly in the
+        <b>Settings</b> panel. The changes apply instantly to both booking methods.
+      </p>
+    </section>
+
+    <!-- ADMIN SETTINGS GUIDE -->
+    <section class="info-section" id="admin-how">
+      <h2 class="section-title">How Admin Settings Work</h2>
+      <p class="section-desc">
+        Administrators can configure when and how users can book slots.  
+        The system repeats your weekly configuration automatically and applies your selected date range.
+      </p>
+
+      <!-- Step 1: Date Range Settings -->
+      <div class="method-box alt">
+        <h3 class="method-title">Step 1 — Set the Booking Date Range</h3>
+        <ol class="steps-list">
+          <li>
+            <strong>1.</strong> Choose between <b>Fixed Date Range</b> and <b>Limited Number of Days</b>.
+            <ul>
+              <li><b>Fixed Range:</b> Pick a specific <b>start date</b> and optionally an <b>end date</b>.</li>
+              <li><b>Limited Days:</b> Set a <b>start date</b> and define how many days users can book (e.g., 30 days from start).</li>
+            </ul>
+          </li>
+          <li><strong>2.</strong> You can check <b>“Use today”</b> to auto-fill the start date with the current day.</li>
+          <li><strong>3.</strong> These date limits define which days appear in the <b>Available Slots</b> navigation and calendar picker.</li>
+          <li><strong>4.</strong> Click <b>Save Settings</b> after adjusting the date range.</li>
+        </ol>
+      </div>
+
+      <!-- Step 2: Weekly Slot Settings -->
+      <div class="method-box alt">
+        <h3 class="method-title">Step 2 — Configure Weekly Slot Schedules</h3>
+        <ol class="steps-list">
+          <li><strong>1.</strong> For each weekday, enter your working <b>time ranges</b>.  
+            Example: <code>9-12,14-17</code> means 9 AM – 12 PM and 2 PM – 5 PM.
+          </li>
+          <li><strong>2.</strong> Set a <b>slot duration</b> (e.g., 30 min, 45 min, 60 min).  
+            The system will automatically divide each time range into evenly spaced slots.</li>
+          <li><strong>3.</strong> Leave a day empty if you’re <b>closed</b> that day — it will be skipped in booking.</li>
+          <li><strong>4.</strong> Click <b>Save Settings</b> once done.  
+            Your changes instantly affect all future booking displays.</li>
+        </ol>
+      </div>
+
+      <p class="note">
+        <strong>Tip:</strong> All admin configurations are stored locally in your browser and applied immediately.  
+        You can revisit this section anytime to adjust your schedule or booking limits.
+      </p>
+    </section>
+
+
+
+  </div>
+</main>
+
+
+<!-- ====== FOOTER ====== -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">© <span id="year"></span> MiniReservation</div>
+    <div class="footer-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#home" class="back-to-top">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ====== BOOKING MODAL ====== -->
+<div class="modal" id="bookingModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"
+  aria-describedby="modalDesc" aria-hidden="true">
+  <div class="modal-backdrop" data-close></div>
+
+  <div class="modal-dialog">
+    <header class="modal-header">
+      <h2 id="modalTitle" class="modal-title">Pick a date and time</h2>
+      <button class="icon-btn" data-close>&times;</button>
+    </header>
+
+    <p id="modalDesc" class="modal-desc">Then tell us how to reach you.</p>
+
+    <form id="bookingForm" novalidate>
+      <div class="form-grid">
+        <label class="form-field">
+          <span>Date</span>
+          <input type="date" id="date" name="date" required />
+          <small class="error" data-for="date"></small>
+        </label>
+
+        <label class="form-field">
+          <span>Time</span>
+          <input type="time" id="time" name="time" required />
+          <small class="error" data-for="time"></small>
+        </label>
+
+        <label class="form-field">
+          <span>Name</span>
+          <input type="text" id="name" name="name" placeholder="Your full name" required />
+          <small class="error" data-for="name"></small>
+        </label>
+
+        <label class="form-field">
+          <span>Email</span>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          <small class="error" data-for="email"></small>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary">Confirm Booking</button>
+      </div>
+
+      <p class="form-success" id="formSuccess" hidden>✅ Booking received! Check console for details.</p>
+    </form>
+  </div>
+</div>
+
+<script src="app.js" defer></script>
+</body>
+</html>
